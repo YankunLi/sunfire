@@ -14,13 +14,12 @@ class sunfire::ceph::mon (
   $enable_monitor            = true,
   $public_network            = undef,
   $cluster_network           = undef,
-  $mon_members               = 'mon',
+  $mon_members               = 'mon1,mon2,mon3',
   $mon_hosts                 = '127.0.0.1',
   $authentication_type       = 'cephx',
   $cluster                   = undef,
   $keyring                   = undef,
   $mon_addr                  = $::ipaddress,
-  $mon_data                  = undef,
   $host                      = $::hostname,
   $fsid                      = '066F558C-6789-4A93-AAF1-5AF1BA01A3AD',
   $admin_key                 = 'AQCTg71RsNIHORAAW+O6FCMZWBjmVfMIPk3MhQ==',
@@ -30,7 +29,8 @@ class sunfire::ceph::mon (
   ) {
 
     $mon_id = $::hostname
-    $mon_data = /var/lib/ceph/ceph-${mon_id}
+    $mon_data = "/var/lib/ceph/mon/ceph-${mon_id}"
+
     # Configure ceph repository
     class { 'ceph::repo': }
 
@@ -49,7 +49,6 @@ class sunfire::ceph::mon (
         args                => $ceph_common_conf_args
       }
     }
-
 
     # Install and configure ceph monitors
     if $ensure == present {
