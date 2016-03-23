@@ -92,36 +92,27 @@ class sunfire::ceph::store (
       ensure                  => absent,
     }
   }
-
   # initializing osd
-  class {'sunfire::ceph::osd':
-  ensure                     => present,
-  enable_osd                => $enable_osd,
-  cluster                   => $cluster,
-  osd_device_dict           => $osd_device_dict,
-  osd_journal_size          => $osd_journal_size,
-  }
+  if $enable_osd {
+    $osd_data_device_list = keys($osd_device_dict)
 
-#  if $enable_osd {
-#    $osd_data_device_list = keys($osd_device_dict)
-#
-#    each($osd_data_device_list) |$key| {
-#      $osd_data_name = $key
-#      if $osd_device_dict[$key] == '' {
-#        ceph::osd { $osd_data_name:
-#          ensure           => $ensure,
-#          cluster          => $cluster,
-#        }
-#      } else {
-#        $osd_journal_name = $osd_device_dict[$key]
-#        ceph::osd { $osd_data_name:
-#          ensure           => $ensure,
-#          cluster          => $cluster,
-#          journal          => $osd_journal_name,
-#        }
-#      } 
-#    }
-#  }
+    each($osd_data_device_list) |$key| {
+      $osd_data_name = $key
+      if $osd_device_dict[$key] == '' {
+        ceph::osd { $osd_data_name:
+          ensure           => $ensure,
+          cluster          => $cluster,
+        }
+      } else {
+        $osd_journal_name = $osd_device_dict[$key]
+        ceph::osd { $osd_data_name:
+          ensure           => $ensure,
+          cluster          => $cluster,
+          journal          => $osd_journal_name,
+        }
+      } 
+    }
+  }
 
   Ceph::Key {
     inject         => true,

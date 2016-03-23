@@ -47,8 +47,8 @@ class ceph::params {
   $filestore_fd_cache_size      = 204800 # we need more fd cache size
 
   # osd xfs options
-  $osd_xfs_mount_options         = 'rw,noexec,nodev,noatime,nodiratime,barrier=0,discard,inode64,logbsize=256k,delaylog'
-  $osd_xfs_mkfs_options          = "-f -n size=64k -i size=512 -d agcount=${::processorcount} -l size=1024m"
+  $osd_xfs_mount_options_xfs         = 'rw,noexec,nodev,noatime,nodiratime,barrier=0,discard,inode64,logbsize=256k,delaylog'
+  $osd_xfs_mkfs_options_xfs          = "-f -n size=64k -i size=512 -d agcount=${::processorcount} -l size=1024m"
 
   # osd start option
   $osd_crush_update_on_start     = false # because we need our crush map and policy, we don't need auto update crush map on start

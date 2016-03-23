@@ -1,0 +1,15 @@
+reconstitute ceph osd and monitor install/configure
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: root <root@ceph-1.com>
+#
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	new file:   manifests/ceph/.mon.pp.swp
+#	modified:   manifests/ceph/mon.pp
+#	new file:   manifests/ceph/store.pp
+#
