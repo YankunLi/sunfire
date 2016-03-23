@@ -31,6 +31,7 @@ class sunfire::ceph::store (
 
   $keyring                    = undef,
   $admin_key                  = 'AQCTg71RsNIHORAAW+O6FCMZWBjmVfMIPk3MhQ==',
+  $rgw_key                    = 'AQCTg71RsNIHORAAW+O6FCMZWBjmVfMIPk3MhQ==',
   $mon_key                    = 'AQDesGZSsC7KJBAAw+W/Z4eGSQGAIbxWjxjvfw==',
   $bootstrap_osd_key          = 'AQABsWZSgEDmJhAAkAGSOOAJwrMHrM5Pz5On1A==',
 
@@ -150,6 +151,12 @@ class sunfire::ceph::store (
     cap_mon => 'allow profile bootstrap-osd',
   }
 
+  ceph::key { "client.${host}":
+    secret       => $rgw_key,
+    cap_mon      => 'allow *',
+    cap_osd      => 'allow *',
+    cap_mds      => 'allow',
+  }
 #  ceph::key {'client.bootstrap-osd':
 #    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
 #    secret       => $bootstrap_osd_key,
