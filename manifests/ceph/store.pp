@@ -29,6 +29,11 @@ class sunfire::ceph::store (
 
   $enable_mds                 = false,
 
+  $pool_name                  = 'openstack-00',
+  $pg_num                     = 64,
+  $pgp_num                    = undef,
+  $size                       = undef,
+
   $keyring                    = undef,
   $admin_key                  = 'AQCTg71RsNIHORAAW+O6FCMZWBjmVfMIPk3MhQ==',
   $rgw_key                    = 'AQCTg71RsNIHORAAW+O6FCMZWBjmVfMIPk3MhQ==',
@@ -42,7 +47,7 @@ class sunfire::ceph::store (
   ){
 
   #configure package repository
-  class { 'ceph::repo': }
+#  class { 'ceph::repo': }
 
   # install and configure ceph
   class { 'ceph':
@@ -134,6 +139,11 @@ class sunfire::ceph::store (
 #      } 
 #    }
 #  }
+  if enable_rgw {
+    class { 'sunfire::ceph::rgw':
+      rgw_name               => $host,
+    }
+  }
 
   Ceph::Key {
     inject         => true,
@@ -156,6 +166,13 @@ class sunfire::ceph::store (
     cap_mon      => 'allow *',
     cap_osd      => 'allow *',
     cap_mds      => 'allow',
+  }
+  
+  ceph::pool { "${pool_name}":
+    ensure       => present,
+    pg_num       => $pg_num,
+    pgp_num      => $pgp_num,
+    size         => $size,
   }
 #  ceph::key {'client.bootstrap-osd':
 #    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',

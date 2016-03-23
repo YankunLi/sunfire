@@ -1,5 +1,6 @@
-class ceph::params {
+class sunfire::ceph::params {
 
+  $exec_timeout                 = 600
   # install
   $package_name                 = 'ceph'
   $release                      = 'dumpling'
@@ -85,6 +86,5 @@ class ceph::params {
   $rgw_num_rados_handles                 = 20
   $rgw_swift_token_expiration            = 86400
   $rgw_thread_pool_size                  = 200
-
 
 }
