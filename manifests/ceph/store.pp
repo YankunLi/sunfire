@@ -16,7 +16,7 @@ class sunfire::ceph::store (
   $public_network             = undef,
   $cluster_network            = undef,
 
-  $enable_monitor             = false,
+  $enable_mon                 = false,
   $host                       = $::hostname,
   $mon_addr                   = $::ipaddress,
 
@@ -72,34 +72,45 @@ class sunfire::ceph::store (
   }
 
   #enable ceph monitor
-  if $ensure == present {
-    $mon_id = $::hostname
-    $mon_data = "/var/lib/ceph/mon/ceph-${mon_id}"
-    ceph::mon { $mon_id:
-      ensure                 => present,
-      key                    => $mon_key,
-      authentication_type    => $authentication_type,
-    }
-
-    ceph_config {
-      "mon.${mon_id}/host":                         value => $host;
-      "mon.${mon_id}/mon_data":                     value => $mon_data;
-      "mon.${mon_id}/mon_addr":                     value => "${mon_addr}:6789";
-    }
-
-  } else {
-    ceph::mon { $::hostname:
-      ensure                  => absent,
+  if $enable_mon {
+    class {'sunfire::ceph::mon':
+      ensure                   => present,
+      authentication_type      => $authentication_type,
+      cluster                  => $cluster,
+      mon_addr                 => $mon_addr,
+      mon_key                  => $mon_key,
+      host                     => $host,
     }
   }
-
+#  if $ensure == present {
+#    $mon_id = $::hostname
+#    $mon_data = "/var/lib/ceph/mon/ceph-${mon_id}"
+#    ceph::mon { $mon_id:
+#      ensure                 => present,
+#      key                    => $mon_key,
+#      authentication_type    => $authentication_type,
+#    }
+#
+#    ceph_config {
+#      "mon.${mon_id}/host":                         value => $host;
+#      "mon.${mon_id}/mon_data":                     value => $mon_data;
+#      "mon.${mon_id}/mon_addr":                     value => "${mon_addr}:6789";
+#    }
+#
+#  } else {
+#    ceph::mon { $::hostname:
+#      ensure                  => absent,
+#    }
+#  }
+#
   # initializing osd
-  class {'sunfire::ceph::osd':
-  ensure                     => present,
-  enable_osd                => $enable_osd,
-  cluster                   => $cluster,
-  osd_device_dict           => $osd_device_dict,
-  osd_journal_size          => $osd_journal_size,
+  if $enable_osd {
+    class {'sunfire::ceph::osd':
+    ensure                     => present,
+    cluster                   => $cluster,
+    osd_device_dict           => $osd_device_dict,
+    osd_journal_size          => $osd_journal_size,
+    }
   }
 
 #  if $enable_osd {
@@ -126,7 +137,7 @@ class sunfire::ceph::store (
   Ceph::Key {
     inject         => true,
     inject_as_id   => 'mon.',
-    inject_keyring => "/var/lib/ceph/mon/ceph-${mon_id}/keyring",
+    inject_keyring => "/var/lib/ceph/mon/ceph-${host}/keyring",
   }
   ceph::key { 'client.admin':
     secret  => $admin_key,
