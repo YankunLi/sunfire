@@ -72,7 +72,7 @@ class sunfire::ceph::params {
   $rbd_cache_writethrough_until_flush  = true
 
   # rgw
-  $rgw_keystone_accepted_roles           = "admin, staff, _member_"
+  $rgw_keystone_accepted_roles           = "admin,  _member_"
   $rgw_frontends                         = "civetweb port=7480"
   $rgw_enable_apis                       = "s3, admin"
   $rgw_enable_usage_log                  = true
@@ -81,10 +81,10 @@ class sunfire::ceph::params {
   $nss_db_path                           = '/var/ceph/nss'
   $rgw_print_continue                    = false
   $rgw_override_bucket_index_max_shards  = 0
-  $rgw_cache_enabled                     = true
   $rgw_cache_lru_size                    = 10000
   $rgw_num_rados_handles                 = 20
   $rgw_swift_token_expiration            = 86400
   $rgw_thread_pool_size                  = 200
+  $rgw_cache_enabled                     = true
 
 }
