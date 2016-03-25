@@ -57,17 +57,18 @@ class sunfire::ceph::store (
   $ceph_common_conf_ssd_args   = undef,
   ){
 
-#  firewall { '100 allow OSD access':
-#    port   => ['6800-7000'],
-#    proto  => tcp,
-#    action => accept,
-#  }
-#
-#  firewall { '101 allow ssh access':
-#    port   => [22],
-#    proto  => tcp,
-#    action => accept,
-#  }
+  firewall { '100 allow OSD access':
+    port   => ['6800-7000'],
+    proto  => tcp,
+    action => accept,
+  }
+
+  firewall { '101 allow ssh access':
+    port   => [22],
+    proto  => tcp,
+    action => accept,
+  }
+
   #configure package repository
 #  class { 'ceph::repo': }
 
@@ -110,21 +111,8 @@ class sunfire::ceph::store (
       mon_key                  => $mon_key,
       host                     => $host,
     }
- #   Ceph::Key {
- #     inject         => true,
- #     inject_as_id   => 'mon.',
- #     inject_keyring => "/var/lib/ceph/mon/ceph-${host}/keyring",
- #   }
- #   ceph::key { 'client.admin':
- #     secret  => $admin_key,
- #     cap_mon => 'allow *',
- #     cap_osd => 'allow *',
- #     cap_mds => 'allow',
- #   }
- #   ceph::key { 'client.bootstrap-osd':
- #     secret  => $bootstrap_osd_key,
- #     cap_mon => 'allow profile bootstrap-osd',
- #   }
+
+ #   generate key
   }
   if $enable_mon {
     Ceph::Key {
@@ -154,27 +142,6 @@ class sunfire::ceph::store (
       cap_mon => 'allow profile bootstrap-osd',
     }
   }
-#  if $ensure == present {
-#    $mon_id = $::hostname
-#    $mon_data = "/var/lib/ceph/mon/ceph-${mon_id}"
-#    ceph::mon { $mon_id:
-#      ensure                 => present,
-#      key                    => $mon_key,
-#      authentication_type    => $authentication_type,
-#    }
-#
-#    ceph_config {
-#      "mon.${mon_id}/host":                         value => $host;
-#      "mon.${mon_id}/mon_data":                     value => $mon_data;
-#      "mon.${mon_id}/mon_addr":                     value => "${mon_addr}:6789";
-#    }
-#
-#  } else {
-#    ceph::mon { $::hostname:
-#      ensure                  => absent,
-#    }
-#  }
-#
   # initializing osd
   if $enable_osd {
     class {'sunfire::ceph::osd':
@@ -183,39 +150,15 @@ class sunfire::ceph::store (
     osd_device_dict           => $osd_device_dict,
     osd_journal_size          => $osd_journal_size,
     }
-#    ceph::key { 'client.bootstrap-osd':
-#      secret  => $bootstrap_osd_key,
-#      cap_mon => 'allow profile bootstrap-osd',
-#    }
   }
 
-#  if $enable_osd {
-#    $osd_data_device_list = keys($osd_device_dict)
-#
-#    each($osd_data_device_list) |$key| {
-#      $osd_data_name = $key
-#      if $osd_device_dict[$key] == '' {
-#        ceph::osd { $osd_data_name:
-#          ensure           => $ensure,
-#          cluster          => $cluster,
-#        }
-#      } else {
-#        $osd_journal_name = $osd_device_dict[$key]
-#        ceph::osd { $osd_data_name:
-#          ensure           => $ensure,
-#          cluster          => $cluster,
-#          journal          => $osd_journal_name,
-#        }
-#      } 
-#    }
-#  }
 #
   if $enable_rgw  {
-#    firewall { '102 allow rgw access':
-#      port   => [7480],
-#      proto  => tcp,
-#      action => accept,
-#    }
+    firewall { '102 allow rgw access':
+      port   => [7480],
+      proto  => tcp,
+      action => accept,
+    }
     class { 'sunfire::ceph::rgw':
       rgw_ensure                   => $rgw_ensure,
       user                         => $user,
@@ -269,16 +212,5 @@ class sunfire::ceph::store (
       keyring_path => "/var/lib/ceph/mds/ceph-${host}/keyring",
     }
   }
-
   
-#  ceph::pool { "${pool_name}":
-#    ensure       => present,
-#    pg_num       => $pg_num,
-#    pgp_num      => $pgp_num,
-#    size         => $size,
-#  }
-#  ceph::key {'client.bootstrap-osd':
-#    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-#    secret       => $bootstrap_osd_key,
-#  }
 }
