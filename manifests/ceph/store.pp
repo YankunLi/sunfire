@@ -54,7 +54,7 @@ class sunfire::ceph::store (
   $mon_osd_full_ratio           = '0.95',
   $mon_osd_nearfull_ratio       = '0.85',
   $ceph_common_conf_sata_args   = undef,
-  $ceph_common_conf_ssd_args    = undef,
+  $ceph_common_conf_ssd_args   = undef,
   ){
 
 #  firewall { '100 allow OSD access':
@@ -62,13 +62,9 @@ class sunfire::ceph::store (
 #    proto  => tcp,
 #    action => accept,
 #  }
+#
 #  firewall { '101 allow ssh access':
 #    port   => [22],
-#    proto  => tcp,
-#    action => accept,
-#  }
-#  firewall { '102 allow rgw access':
-#    port   => [7480],
 #    proto  => tcp,
 #    action => accept,
 #  }
@@ -215,6 +211,11 @@ class sunfire::ceph::store (
 #  }
 #
   if $enable_rgw  {
+#    firewall { '102 allow rgw access':
+#      port   => [7480],
+#      proto  => tcp,
+#      action => accept,
+#    }
     class { 'sunfire::ceph::rgw':
       rgw_ensure                   => $rgw_ensure,
       user                         => $user,
