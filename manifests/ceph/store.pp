@@ -58,7 +58,7 @@ class sunfire::ceph::store (
   ){
 
   firewall { '100 allow OSD access':
-    port   => ['6800-7000'],
+    port   => ['6800-7300'],
     proto  => tcp,
     action => accept,
   }
